@@ -46,3 +46,55 @@ An ordered region is a block of code that is executed in a specific order by the
   // followed by the second thread, and so on.
 }
 ```
+
+# Clause
+A clause can be private or shared. Use the private variables whenever possible to avoid race conditions and synchronization issues. Shared should only used when necessary and use synchronization methods.
+```c
+#pragma omp parallel private(x)
+{
+  // Code to be executed in parallel
+  // The variable 'x' is private to each thread
+}
+```
+
+```c
+#pragma omp parallel shared(x)
+{
+  // Code to be executed in parallel
+  // The variable 'x' is shared by all threads
+}
+```
+Other ones are firstprivate, lastprivate, threadprivate, copyin, reduction.
+
+
+# PRACE 
+omp is for shared memory parallelization. Its execution model is multithreading to distribute work. Our task to create multiple threads and distribute work over threads and make sure thread  execute independently. 
+
+### omp library routines
+
+`omp_get_thread_num`: returns number of current thread 
+`omp_get_num_threads`: returns total number of threads 
+`omp_get_wtime`: return elapsed walltime in seconds
+
+### private and shared variables
+Private variables: each thread works on it’s own copy of the variable 
+Shared variables: threads work on a single copy of the variable
+By default, most OpenMP variables are shared variables
+after compiling, you can run the programm with giving number of threads
+`# OMP_NUM_THREADS=4 ./Pi-OMP3`
+
+Directives can have clauses: `pragma omp parallel private(x)`
+
+### for directive
+`pragma omp for` is used to distribute iterations of a loop among threads.
+but when the computation is light, the overhead of creating threads is more than the computation itself. Therefore it takes longer to execute the program with more threads.
+
+### reduction
+`#pragma omp parallel for reduction([reduction-op],[init_value])` 
+reduction-ops: `+, -, *, max, min, &, &&, |, ||, ^`
+In the example of summing values of for loop,
+declaring ‘sum’ private doesn’t help: you need to add all ‘private’ sums at the end. So reduction is used.
+`#pragma omp parallel for reduction(+:sum)`
+
+### running
+after compiling, y
